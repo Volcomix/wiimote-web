@@ -1,60 +1,34 @@
-import Button from '@mui/material/Button'
 import CssBaseline from '@mui/material/CssBaseline'
 import {
   Experimental_CssVarsProvider as CssVarsProvider,
   StyledEngineProvider,
 } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
 import { useEffect, useState } from 'react'
 
-import styles from './App.module.css'
+import WiimoteConnection from 'features/WiimoteConnection'
+import WiimoteViewer from 'features/WiimoteViewer'
+import { Wiimote } from 'services/wiimote'
 
 const App = () => {
-  const [device, setDevice] = useState<HIDDevice>()
+  const [wiimote, setWiimote] = useState<Wiimote | null>(null)
 
   useEffect(() => {
-    if (!device) {
+    if (!wiimote) {
       return
     }
-
-    device.oninputreport = (event) => {
-      switch (event.reportId) {
-        case 0x30:
-          console.log(event.data)
-          break
-      }
-    }
-
-    return () => {
-      device.oninputreport = null
-    }
-  }, [device])
+    wiimote.onDisconnect = () => setWiimote(null)
+  }, [wiimote])
 
   return (
     <>
       <CssBaseline />
       <StyledEngineProvider injectFirst>
         <CssVarsProvider>
-          <div className={styles.root}>
-            {!device ? (
-              <Button
-                variant="outlined"
-                onClick={async () => {
-                  if ('hid' in navigator) {
-                    const [device] = await navigator.hid.requestDevice({
-                      filters: [{ vendorId: 0x057e }],
-                    })
-                    setDevice(device)
-                    await device.open()
-                  }
-                }}
-              >
-                Add wiimote
-              </Button>
-            ) : (
-              <Typography>{device.productName}</Typography>
-            )}
-          </div>
+          {!wiimote ? (
+            <WiimoteConnection onConnect={setWiimote} />
+          ) : (
+            <WiimoteViewer wiimote={wiimote} />
+          )}
         </CssVarsProvider>
       </StyledEngineProvider>
     </>
