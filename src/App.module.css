@@ -1,0 +1,6 @@
+.root {
+  display: grid;
+  position: fixed;
+  inset: 0;
+  place-content: center;
+}
