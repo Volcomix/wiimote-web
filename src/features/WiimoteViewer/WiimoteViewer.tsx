@@ -1,4 +1,5 @@
-import { useEffect } from 'react'
+import cx from 'classnames'
+import { useEffect, useState } from 'react'
 
 import wiimoteBack from 'assets/wiimote-back.jpg'
 import wiimoteFront from 'assets/wiimote-front.jpg'
@@ -11,13 +12,13 @@ type WiimoteViewerProps = {
 }
 
 const WiimoteViewer = ({ wiimote }: WiimoteViewerProps) => {
+  const [coreButtons, setCoreButtons] = useState(wiimote.coreButtons)
+
   useEffect(() => {
     if (!wiimote) {
       return
     }
-    wiimote.onButtonChange = () => {
-      console.log(JSON.stringify(wiimote.coreButtons))
-    }
+    wiimote.onButtonChange = () => setCoreButtons({ ...wiimote.coreButtons })
     return () => {
       wiimote.onButtonChange = null
     }
@@ -25,8 +26,23 @@ const WiimoteViewer = ({ wiimote }: WiimoteViewerProps) => {
 
   return (
     <div className={styles.root}>
-      <img className={styles.image} src={wiimoteFront} />
-      <img className={styles.image} src={wiimoteBack} />
+      <div className={styles.images}>
+        <img className={styles.image} src={wiimoteFront} />
+        <img className={styles.image} src={wiimoteBack} />
+        {coreButtons.dPadLeft && (
+          <div className={cx(styles.button, styles.dPadLeft)} />
+        )}
+        {coreButtons.dPadRight && (
+          <div className={cx(styles.button, styles.dPadRight)} />
+        )}
+        {coreButtons.dPadDown && (
+          <div className={cx(styles.button, styles.dPadDown)} />
+        )}
+        {coreButtons.dPadUp && (
+          <div className={cx(styles.button, styles.dPadUp)} />
+        )}
+        {coreButtons.plus && <div className={cx(styles.button, styles.plus)} />}
+      </div>
     </div>
   )
 }

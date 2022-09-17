@@ -5,6 +5,7 @@ export const InputReport = {
 }
 
 export const CORE_BUTTONS = [
+  // First Byte
   'dPadLeft',
   'dPadRight',
   'dPadDown',
@@ -14,6 +15,7 @@ export const CORE_BUTTONS = [
   null,
   null,
 
+  // Second Byte
   'two',
   'one',
   'b',
