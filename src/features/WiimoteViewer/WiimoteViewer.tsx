@@ -16,7 +16,7 @@ const WiimoteViewer = ({ wiimote }: WiimoteViewerProps) => {
       return
     }
     wiimote.onButtonChange = () => {
-      console.log('Button change')
+      console.log(JSON.stringify(wiimote.coreButtons))
     }
     return () => {
       wiimote.onButtonChange = null
