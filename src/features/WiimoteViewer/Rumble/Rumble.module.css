@@ -24,3 +24,10 @@
     color: var(--mui-palette-primary-light);
   }
 }
+
+.slider {
+  position: absolute;
+  top: 57%;
+  left: 72%;
+  height: 24%;
+}
