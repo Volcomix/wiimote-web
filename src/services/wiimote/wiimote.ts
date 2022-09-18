@@ -9,7 +9,7 @@ export const connect = async (): Promise<Wiimote | null> => {
   const wiimote = createWiimote(device)
   addDisconnectListener(device, wiimote)
   addStatusListener(device, wiimote)
-  addButtonChangeListener(device, wiimote)
+  addCoreButtonChangeListener(device, wiimote)
 
   await sendStatusRequest(device)
 
@@ -36,7 +36,7 @@ const createWiimote = (device: HIDDevice): Wiimote => {
     sendLeds: (leds) => sendLeds(device, wiimote, leds),
     onDisconnect: null,
     onStatus: null,
-    onButtonChange: null,
+    onCoreButtonChange: null,
   }
   return wiimote
 }
@@ -71,7 +71,7 @@ const addStatusListener = (device: HIDDevice, wiimote: Wiimote) => {
   })
 }
 
-const addButtonChangeListener = (device: HIDDevice, wiimote: Wiimote) => {
+const addCoreButtonChangeListener = (device: HIDDevice, wiimote: Wiimote) => {
   device.addEventListener('inputreport', (event: HIDInputReportEvent) => {
     if (event.reportId !== InputReport.CORE_BUTTONS) {
       return
@@ -83,7 +83,7 @@ const addButtonChangeListener = (device: HIDDevice, wiimote: Wiimote) => {
       }
       wiimote.coreButtons[coreButton] = !!(bits & (1 << bitIndex))
     })
-    wiimote.onButtonChange?.()
+    wiimote.onCoreButtonChange?.()
   })
 }
 

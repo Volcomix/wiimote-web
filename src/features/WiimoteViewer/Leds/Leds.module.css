@@ -1,0 +1,38 @@
+.led {
+  box-sizing: content-box;
+  display: grid;
+  position: absolute;
+  top: 88.3%;
+  place-items: stretch;
+  margin: -2.5%;
+  outline: none;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  padding: 2.5%;
+  width: 2%;
+  height: 1.1%;
+
+  &:nth-child(1) {
+    left: 11.8%;
+  }
+
+  &:nth-child(2) {
+    left: 19.9%;
+  }
+
+  &:nth-child(3) {
+    left: 27.7%;
+  }
+
+  &:nth-child(4) {
+    left: 35.8%;
+  }
+}
+
+.lit::after {
+  opacity: 0.75;
+  box-shadow: 0 0 8px var(--mui-palette-primary-light);
+  background-color: var(--mui-palette-primary-light);
+  content: '';
+}

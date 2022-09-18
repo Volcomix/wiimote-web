@@ -7,7 +7,7 @@ export type Wiimote = {
   sendRumble: (rumble: boolean) => Promise<void>
   sendLeds: (leds: Leds) => Promise<void>
   onDisconnect: (() => void) | null
-  onButtonChange: (() => void) | null
+  onCoreButtonChange: (() => void) | null
   onStatus: (() => void) | null
 }
 

@@ -1,0 +1,26 @@
+.root {
+  position: absolute;
+  top: 43.6%;
+  left: 66.1%;
+  outline: none;
+  border: 2px solid var(--mui-palette-text-disabled);
+  border-radius: 50%;
+  background-color: transparent;
+  cursor: pointer;
+  padding: 2.5%;
+  line-height: 0;
+}
+
+.icon {
+  color: var(--mui-palette-text-disabled);
+  font-size: calc(100vh * 0.06);
+}
+
+.enabled {
+  opacity: 0.75;
+  border-color: var(--mui-palette-primary-light);
+
+  & .icon {
+    color: var(--mui-palette-primary-light);
+  }
+}
