@@ -1,6 +1,11 @@
 export const VENDOR_ID = 0x057e
 
+export const OutputReport = {
+  STATUS: 0x15,
+}
+
 export const InputReport = {
+  STATUS: 0x20,
   CORE_BUTTONS: 0x30,
 }
 

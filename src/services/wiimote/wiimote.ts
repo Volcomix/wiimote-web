@@ -1,4 +1,4 @@
-import { CORE_BUTTONS, InputReport, VENDOR_ID } from './constants'
+import { CORE_BUTTONS, InputReport, OutputReport, VENDOR_ID } from './constants'
 import { CoreButton, CoreButtons, Wiimote } from './types'
 
 export const connect = async (): Promise<Wiimote | null> => {
@@ -9,6 +9,8 @@ export const connect = async (): Promise<Wiimote | null> => {
   const wiimote = createWiimote()
   addDisconnectListener(device, wiimote)
   addButtonChangeListener(device, wiimote)
+  addStatusListener(device, wiimote)
+  sendStatusRequest(device)
   return wiimote
 }
 
@@ -25,8 +27,10 @@ const requestDevice = async (): Promise<HIDDevice | null> => {
 
 const createWiimote = (): Wiimote => ({
   coreButtons: createCoreButtons(),
+  leds: [false, false, false, false],
   onDisconnect: null,
   onButtonChange: null,
+  onStatus: null,
 })
 
 const createCoreButtons = () =>
@@ -60,4 +64,23 @@ const addButtonChangeListener = (device: HIDDevice, wiimote: Wiimote) => {
     })
     wiimote.onButtonChange?.()
   })
+}
+
+const addStatusListener = (device: HIDDevice, wiimote: Wiimote) => {
+  device.addEventListener('inputreport', (event: HIDInputReportEvent) => {
+    if (event.reportId !== InputReport.STATUS) {
+      return
+    }
+    // TODO Also load core buttons, battery level and other flags
+    const bits = event.data.getUint8(2)
+    for (let led = 0; led < 4; led++) {
+      wiimote.leds[led] = !!(bits & (1 << (4 + led)))
+    }
+    wiimote.onStatus?.()
+  })
+}
+
+const sendStatusRequest = (device: HIDDevice) => {
+  // TODO Send rumble bit to preserve it
+  device.sendReport(OutputReport.STATUS, new Uint8Array(1))
 }
