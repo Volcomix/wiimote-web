@@ -42,6 +42,14 @@ const WiimoteViewer = ({ wiimote }: WiimoteViewerProps) => {
           <div className={cx(styles.button, styles.dPadUp)} />
         )}
         {coreButtons.plus && <div className={cx(styles.button, styles.plus)} />}
+        {coreButtons.two && <div className={cx(styles.button, styles.two)} />}
+        {coreButtons.one && <div className={cx(styles.button, styles.one)} />}
+        {coreButtons.b && <div className={cx(styles.button, styles.theB)} />}
+        {coreButtons.a && <div className={cx(styles.button, styles.theA)} />}
+        {coreButtons.minus && (
+          <div className={cx(styles.button, styles.minus)} />
+        )}
+        {coreButtons.home && <div className={cx(styles.button, styles.home)} />}
       </div>
     </div>
   )
