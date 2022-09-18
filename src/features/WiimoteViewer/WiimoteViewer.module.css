@@ -110,12 +110,17 @@
 }
 
 .led {
+  box-sizing: content-box;
+  display: grid;
   position: absolute;
   top: 88.3%;
+  place-items: stretch;
+  margin: -2.5%;
   outline: none;
   border: none;
+  background-color: transparent;
   cursor: pointer;
-  padding: 0;
+  padding: 2.5%;
   width: 2%;
   height: 1.1%;
 
@@ -136,8 +141,9 @@
   }
 }
 
-.lit {
+.lit::after {
   opacity: 0.75;
   box-shadow: 0 0 8px var(--mui-palette-primary-light);
   background-color: var(--mui-palette-primary-light);
+  content: '';
 }
