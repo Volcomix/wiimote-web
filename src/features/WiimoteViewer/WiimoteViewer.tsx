@@ -18,6 +18,8 @@ const WiimoteViewer = ({ wiimote }: WiimoteViewerProps) => {
   const [, setLatestUpdate] = useState({})
   const update = () => setLatestUpdate({})
 
+  const [rumble, setRumble] = useState(wiimote.rumble)
+
   useEffect(() => {
     if (!wiimote) {
       return
@@ -37,6 +39,17 @@ const WiimoteViewer = ({ wiimote }: WiimoteViewerProps) => {
       wiimote.onStatus = null
     }
   })
+
+  useEffect(() => {
+    if (!rumble) {
+      return
+    }
+    const intervalId = setInterval(() => {
+      wiimote.sendRumble(true)
+      setTimeout(() => wiimote.sendRumble(false), 10)
+    }, 30)
+    return () => clearInterval(intervalId)
+  }, [rumble, wiimote])
 
   return (
     <div className={styles.root}>
@@ -98,11 +111,8 @@ const WiimoteViewer = ({ wiimote }: WiimoteViewerProps) => {
         </div>
         {/* TODO Extract rumble component */}
         <button
-          className={cx(styles.rumble, { [styles.enabled]: wiimote.rumble })}
-          onClick={async () => {
-            await wiimote.sendRumble(!wiimote.rumble)
-            update()
-          }}
+          className={cx(styles.rumble, { [styles.enabled]: rumble })}
+          onClick={async () => setRumble(!rumble)}
         >
           <VibrationIcon className={styles.icon} />
         </button>
