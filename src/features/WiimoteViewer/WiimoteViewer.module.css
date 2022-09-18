@@ -112,6 +112,10 @@
 .led {
   position: absolute;
   top: 88.3%;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
   width: 2%;
   height: 1.1%;
 

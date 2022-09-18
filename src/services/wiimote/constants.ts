@@ -1,6 +1,7 @@
 export const VENDOR_ID = 0x057e
 
 export const OutputReport = {
+  LEDS: 0x11,
   STATUS: 0x15,
 }
 

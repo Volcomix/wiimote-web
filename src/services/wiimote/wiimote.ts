@@ -1,16 +1,18 @@
 import { CORE_BUTTONS, InputReport, OutputReport, VENDOR_ID } from './constants'
-import { CoreButton, CoreButtons, Wiimote } from './types'
+import { CoreButton, CoreButtons, Leds, Wiimote } from './types'
 
 export const connect = async (): Promise<Wiimote | null> => {
   const device = await requestDevice()
   if (!device) {
     return null
   }
-  const wiimote = createWiimote()
+  const wiimote = createWiimote(device)
   addDisconnectListener(device, wiimote)
-  addButtonChangeListener(device, wiimote)
   addStatusListener(device, wiimote)
-  sendStatusRequest(device)
+  addButtonChangeListener(device, wiimote)
+
+  await sendStatusRequest(device)
+
   return wiimote
 }
 
@@ -25,13 +27,17 @@ const requestDevice = async (): Promise<HIDDevice | null> => {
   return device
 }
 
-const createWiimote = (): Wiimote => ({
-  coreButtons: createCoreButtons(),
-  leds: [false, false, false, false],
-  onDisconnect: null,
-  onButtonChange: null,
-  onStatus: null,
-})
+const createWiimote = (device: HIDDevice): Wiimote => {
+  const wiimote: Wiimote = {
+    coreButtons: createCoreButtons(),
+    leds: [false, false, false, false],
+    sendLeds: (leds) => sendLeds(device, wiimote, leds),
+    onDisconnect: null,
+    onStatus: null,
+    onButtonChange: null,
+  }
+  return wiimote
+}
 
 const createCoreButtons = () =>
   CORE_BUTTONS.filter((button): button is CoreButton => !!button).reduce(
@@ -50,6 +56,20 @@ const addDisconnectListener = (device: HIDDevice, wiimote: Wiimote) => {
   navigator.hid.addEventListener('disconnect', handleDisconnect)
 }
 
+const addStatusListener = (device: HIDDevice, wiimote: Wiimote) => {
+  device.addEventListener('inputreport', (event: HIDInputReportEvent) => {
+    if (event.reportId !== InputReport.STATUS) {
+      return
+    }
+    // TODO Also load core buttons, battery level and other flags
+    const bits = event.data.getUint8(2)
+    for (let led = 0; led < 4; led++) {
+      wiimote.leds[led] = !!(bits & (1 << (4 + led)))
+    }
+    wiimote.onStatus?.()
+  })
+}
+
 const addButtonChangeListener = (device: HIDDevice, wiimote: Wiimote) => {
   device.addEventListener('inputreport', (event: HIDInputReportEvent) => {
     if (event.reportId !== InputReport.CORE_BUTTONS) {
@@ -66,21 +86,20 @@ const addButtonChangeListener = (device: HIDDevice, wiimote: Wiimote) => {
   })
 }
 
-const addStatusListener = (device: HIDDevice, wiimote: Wiimote) => {
-  device.addEventListener('inputreport', (event: HIDInputReportEvent) => {
-    if (event.reportId !== InputReport.STATUS) {
-      return
-    }
-    // TODO Also load core buttons, battery level and other flags
-    const bits = event.data.getUint8(2)
-    for (let led = 0; led < 4; led++) {
-      wiimote.leds[led] = !!(bits & (1 << (4 + led)))
-    }
-    wiimote.onStatus?.()
+const sendLeds = async (device: HIDDevice, wiimote: Wiimote, leds: Leds) => {
+  const bits = leds
+    .map(Number)
+    .reduce((acc, led, bitIndex) => acc | (led << (4 + bitIndex)), 0)
+
+  // TODO Send rumble bit to preserve it
+  await device.sendReport(OutputReport.LEDS, new Uint8Array([bits]))
+
+  leds.forEach((isLit, led) => {
+    wiimote.leds[led] = isLit
   })
 }
 
-const sendStatusRequest = (device: HIDDevice) => {
+const sendStatusRequest = async (device: HIDDevice) => {
   // TODO Send rumble bit to preserve it
-  device.sendReport(OutputReport.STATUS, new Uint8Array(1))
+  await device.sendReport(OutputReport.STATUS, new Uint8Array(1))
 }
