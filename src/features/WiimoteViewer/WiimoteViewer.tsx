@@ -112,7 +112,7 @@ const WiimoteViewer = ({ wiimote }: WiimoteViewerProps) => {
         {/* TODO Extract rumble component */}
         <button
           className={cx(styles.rumble, { [styles.enabled]: rumble })}
-          onClick={async () => setRumble(!rumble)}
+          onClick={() => setRumble(!rumble)}
         >
           <VibrationIcon className={styles.icon} />
         </button>
