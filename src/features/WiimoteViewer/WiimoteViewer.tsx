@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 
 import wiimoteBack from 'assets/wiimote-back.jpg'
 import wiimoteFront from 'assets/wiimote-front.jpg'
+import useUpdate from 'hooks/useUpdate'
 import { Wiimote } from 'services/wiimote'
 import { Leds } from 'services/wiimote/types'
 
@@ -14,9 +15,7 @@ type WiimoteViewerProps = {
 }
 
 const WiimoteViewer = ({ wiimote }: WiimoteViewerProps) => {
-  // TODO Extract update logic into a hook
-  const [, setLatestUpdate] = useState({})
-  const update = () => setLatestUpdate({})
+  const update = useUpdate()
 
   const [rumble, setRumble] = useState(wiimote.rumble)
 
@@ -28,7 +27,7 @@ const WiimoteViewer = ({ wiimote }: WiimoteViewerProps) => {
     return () => {
       wiimote.onButtonChange = null
     }
-  }, [wiimote])
+  }, [update, wiimote])
 
   useEffect(() => {
     if (!wiimote) {
@@ -38,7 +37,7 @@ const WiimoteViewer = ({ wiimote }: WiimoteViewerProps) => {
     return () => {
       wiimote.onStatus = null
     }
-  })
+  }, [update, wiimote])
 
   useEffect(() => {
     if (!rumble) {

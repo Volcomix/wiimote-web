@@ -63,7 +63,6 @@ const addStatusListener = (device: HIDDevice, wiimote: Wiimote) => {
     if (event.reportId !== InputReport.STATUS) {
       return
     }
-    // TODO Also load core buttons, battery level and other flags
     const bits = event.data.getUint8(2)
     for (let led = 0; led < 4; led++) {
       wiimote.leds[led] = !!(bits & (1 << (4 + led)))
@@ -102,7 +101,6 @@ const sendLeds = async (device: HIDDevice, wiimote: Wiimote, leds: Leds) => {
     .map(Number)
     .reduce((acc, led, bitIndex) => acc | (led << (4 + bitIndex)), 0)
 
-  // TODO Send rumble bit to preserve it
   await device.sendReport(OutputReport.LEDS, new Uint8Array([bits]))
 
   leds.forEach((isLit, led) => {
@@ -111,6 +109,5 @@ const sendLeds = async (device: HIDDevice, wiimote: Wiimote, leds: Leds) => {
 }
 
 const sendStatusRequest = async (device: HIDDevice) => {
-  // TODO Send rumble bit to preserve it
   await device.sendReport(OutputReport.STATUS, new Uint8Array(1))
 }
