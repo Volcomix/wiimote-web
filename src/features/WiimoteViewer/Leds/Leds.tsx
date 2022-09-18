@@ -18,6 +18,7 @@ const Leds = ({ wiimote }: LedsProps) => {
       return
     }
     wiimote.onStatus = update
+    update()
     return () => {
       wiimote.onStatus = null
     }
