@@ -1,3 +1,4 @@
+import VibrationIcon from '@mui/icons-material/Vibration'
 import cx from 'classnames'
 import { useEffect, useState } from 'react'
 
@@ -95,6 +96,16 @@ const WiimoteViewer = ({ wiimote }: WiimoteViewerProps) => {
             />
           ))}
         </div>
+        {/* TODO Extract rumble component */}
+        <button
+          className={cx(styles.rumble, { [styles.enabled]: wiimote.rumble })}
+          onClick={async () => {
+            await wiimote.sendRumble(!wiimote.rumble)
+            update()
+          }}
+        >
+          <VibrationIcon className={styles.icon} />
+        </button>
       </div>
     </div>
   )

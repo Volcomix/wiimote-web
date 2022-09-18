@@ -1,8 +1,10 @@
 import { CORE_BUTTONS } from './constants'
 
 export type Wiimote = {
-  coreButtons: CoreButtons
+  rumble: boolean
   leds: Leds
+  coreButtons: CoreButtons
+  sendRumble: (rumble: boolean) => Promise<void>
   sendLeds: (leds: Leds) => Promise<void>
   onDisconnect: (() => void) | null
   onButtonChange: (() => void) | null

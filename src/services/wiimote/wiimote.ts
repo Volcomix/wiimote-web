@@ -29,8 +29,10 @@ const requestDevice = async (): Promise<HIDDevice | null> => {
 
 const createWiimote = (device: HIDDevice): Wiimote => {
   const wiimote: Wiimote = {
-    coreButtons: createCoreButtons(),
+    rumble: false,
     leds: [false, false, false, false],
+    coreButtons: createCoreButtons(),
+    sendRumble: (rumble) => sendRumble(device, wiimote, rumble),
     sendLeds: (leds) => sendLeds(device, wiimote, leds),
     onDisconnect: null,
     onStatus: null,
@@ -84,6 +86,15 @@ const addButtonChangeListener = (device: HIDDevice, wiimote: Wiimote) => {
     })
     wiimote.onButtonChange?.()
   })
+}
+
+const sendRumble = async (
+  device: HIDDevice,
+  wiimote: Wiimote,
+  rumble: boolean
+) => {
+  await device.sendReport(OutputReport.RUMBLE, new Uint8Array([Number(rumble)]))
+  wiimote.rumble = rumble
 }
 
 const sendLeds = async (device: HIDDevice, wiimote: Wiimote, leds: Leds) => {
