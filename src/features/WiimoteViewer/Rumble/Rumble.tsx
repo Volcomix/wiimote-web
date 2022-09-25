@@ -22,6 +22,12 @@ const Rumble = ({ wiimote }: RumbleProps) => {
       return
     }
     const intervalId = setInterval(() => {
+      if (intensity.current === 0) {
+        if (wiimote.rumble) {
+          wiimote.sendRumble(false)
+        }
+        return
+      }
       wiimote.sendRumble(true)
       if (intensity.current < 100) {
         setTimeout(
