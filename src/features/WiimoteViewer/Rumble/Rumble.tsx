@@ -1,8 +1,7 @@
 import VibrationIcon from '@mui/icons-material/Vibration'
-import Slider from '@mui/material/Slider'
 import cx from 'classnames'
-import { useEffect, useRef, useState } from 'react'
 
+import useUpdate from 'hooks/useUpdate'
 import { Wiimote } from 'services/wiimote'
 
 import styles from './Rumble.module.css'
@@ -11,59 +10,19 @@ type RumbleProps = {
   wiimote: Wiimote
 }
 
-const RUMBLE_STEP = 30
-
 const Rumble = ({ wiimote }: RumbleProps) => {
-  const [rumble, setRumble] = useState(wiimote.rumble)
-  const intensity = useRef(wiimote.rumble ? 100 : 0)
-
-  useEffect(() => {
-    if (!rumble) {
-      return
-    }
-    const intervalId = setInterval(() => {
-      if (intensity.current === 0) {
-        if (wiimote.rumble) {
-          wiimote.sendRumble(false)
-        }
-        return
-      }
-      wiimote.sendRumble(true)
-      if (intensity.current < 100) {
-        setTimeout(
-          () => wiimote.sendRumble(false),
-          RUMBLE_STEP * (intensity.current / 100)
-        )
-      }
-    }, RUMBLE_STEP)
-    return () => {
-      clearInterval(intervalId)
-      wiimote.sendRumble(false)
-    }
-  }, [rumble, wiimote])
+  const update = useUpdate()
 
   return (
-    <>
-      <button
-        className={cx(styles.root, { [styles.enabled]: rumble })}
-        onClick={() => setRumble(!rumble)}
-      >
-        <VibrationIcon className={styles.icon} />
-      </button>
-      <Slider
-        className={styles.slider}
-        orientation="vertical"
-        defaultValue={0}
-        onChange={(_, value) => {
-          intensity.current = value as number
-          if (value === 0) {
-            setRumble(false)
-          } else {
-            setRumble(true)
-          }
-        }}
-      />
-    </>
+    <button
+      className={cx(styles.root, { [styles.enabled]: wiimote.rumble })}
+      onClick={async () => {
+        await wiimote.sendRumble(!wiimote.rumble)
+        update()
+      }}
+    >
+      <VibrationIcon className={styles.icon} />
+    </button>
   )
 }
 

@@ -59,7 +59,7 @@ const addDisconnectListener = (device: HIDDevice, wiimote: Wiimote) => {
 }
 
 const addStatusListener = (device: HIDDevice, wiimote: Wiimote) => {
-  device.addEventListener('inputreport', (event: HIDInputReportEvent) => {
+  device.addEventListener('inputreport', async (event) => {
     if (event.reportId !== InputReport.STATUS) {
       return
     }
@@ -72,7 +72,7 @@ const addStatusListener = (device: HIDDevice, wiimote: Wiimote) => {
 }
 
 const addCoreButtonChangeListener = (device: HIDDevice, wiimote: Wiimote) => {
-  device.addEventListener('inputreport', (event: HIDInputReportEvent) => {
+  device.addEventListener('inputreport', (event) => {
     if (event.reportId !== InputReport.CORE_BUTTONS) {
       return
     }
