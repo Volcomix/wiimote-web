@@ -11,7 +11,7 @@ export const connect = async (): Promise<Wiimote | null> => {
   addStatusListener(device, wiimote)
   addCoreButtonChangeListener(device, wiimote)
 
-  await sendStatusRequest(device)
+  await sendStatusRequest(device, wiimote)
 
   return wiimote
 }
@@ -99,7 +99,10 @@ const sendRumble = async (
 const sendLeds = async (device: HIDDevice, wiimote: Wiimote, leds: Leds) => {
   const bits = leds
     .map(Number)
-    .reduce((acc, led, bitIndex) => acc | (led << (4 + bitIndex)), 0)
+    .reduce(
+      (acc, led, bitIndex) => acc | (led << (4 + bitIndex)),
+      wiimote.rumble ? 1 : 0
+    )
 
   await device.sendReport(OutputReport.LEDS, new Uint8Array([bits]))
 
@@ -108,6 +111,9 @@ const sendLeds = async (device: HIDDevice, wiimote: Wiimote, leds: Leds) => {
   })
 }
 
-const sendStatusRequest = async (device: HIDDevice) => {
-  await device.sendReport(OutputReport.STATUS, new Uint8Array(1))
+const sendStatusRequest = async (device: HIDDevice, wiimote: Wiimote) => {
+  await device.sendReport(
+    OutputReport.STATUS,
+    new Uint8Array([wiimote.rumble ? 1 : 0])
+  )
 }
